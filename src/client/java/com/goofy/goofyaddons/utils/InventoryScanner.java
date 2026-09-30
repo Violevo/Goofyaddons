@@ -1,6 +1,7 @@
 package com.goofy.goofyaddons.utils;
 
 import com.goofy.goofyaddons.features.bookflipper.helper.Book;
+import com.goofy.goofyaddons.features.bookflipper.helper.Task;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -14,6 +15,7 @@ import net.minecraft.world.item.component.ItemLore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class InventoryScanner {
     private Minecraft minecraft = Minecraft.getInstance();
@@ -99,6 +101,19 @@ public class InventoryScanner {
         return slots;
     }
 
+    public Integer doesItExist(String string, Set<Integer> set) {
+        AbstractContainerMenu menu = minecraft.player.containerMenu;
+        for (int i = 0; i < menu.slots.size(); i++) {
+            ItemStack item = menu.slots.get(i).getItem();
+            if (item.isEmpty()) continue;
+            ItemLore lore = item.get(DataComponents.LORE);
+            if (lore == null || !lore.lines().stream().anyMatch(l -> l.getString().equals(string))) continue;
+            if (set.contains(i)) continue;
+            return i;
+        }
+        return -1;
+    }
+
     public int checkOrder(int slot) {
         int items = 0;
         AbstractContainerMenu menu = minecraft.player.containerMenu;
@@ -160,16 +175,18 @@ public class InventoryScanner {
     }
 
     public boolean findMisMatch(String string) {
+        List<Integer> slots = new ArrayList<>();
         AbstractContainerMenu menu = minecraft.player.containerMenu;
-        if (!menu.slots.get(29).hasItem() || !menu.slots.get(29).hasItem()) return false;
-        ItemStack item = menu.slots.get(29).getItem();
-        ItemStack item2 = menu.slots.get(33).getItem();
-        ItemLore lore = item.get(DataComponents.LORE);
-        ItemLore lore2 = item2.get(DataComponents.LORE);
-        if (lore == null || lore2 == null) return false;
-        if (lore.lines().stream().anyMatch(l -> l.getString().equals(string)) && lore2.lines().stream().anyMatch(l -> l.getString().equals(string)))
-            return false;
-        return true;
+        int end = menu.slots.size() - 36;
+        for (int i = 0; i < end; i++) {
+            ItemStack item = menu.slots.get(i).getItem();
+            if (item.isEmpty()) continue;
+            ItemLore lore = item.get(DataComponents.LORE);
+            if (lore == null || !lore.lines().stream().anyMatch(l -> l.getString().equals(string))) continue;
+            slots.add(i);
+        }
+        if (getEmptyContainerSlots() == 0 && slots.size() == 1) return true;
+        return false;
     }
 
     public List<Integer> matchingBookInContainer(Book book) {

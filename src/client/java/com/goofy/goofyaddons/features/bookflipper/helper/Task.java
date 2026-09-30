@@ -24,8 +24,7 @@ public class Task {
         NONE,
         SELECTED_COMBINE_STORE_BUYORDER,
         SELECTED_STORE_BUYORDER,
-        ANVIL_SELL,
-        STORE_ANVIL
+        ANVIL_SELL
     }
 
     public boolean instaSell = false;

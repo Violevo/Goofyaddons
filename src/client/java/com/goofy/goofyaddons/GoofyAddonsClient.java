@@ -11,7 +11,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
-
 public class GoofyAddonsClient implements ClientModInitializer {
 
     @Override
